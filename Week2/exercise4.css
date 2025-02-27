@@ -1,0 +1,31 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+section.sub-heading{
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    grid-template-rows: auto;
+    height: 90%;
+}
+.divsh1{
+    background-color: yellow;
+    display: grid
+}
+.divsh2{
+    background-color: rgb(33, 33, 131);
+    color: white;
+}
+.divsh3{
+    background-color: rgb(128, 210, 128);
+}
+.divfooter{
+    background-color: green;
+    color: white;
+}
+.heading,h1{
+    padding-top:1% ;
+    background-color: blue;
+    height: 10%;
+    color: white;
+}

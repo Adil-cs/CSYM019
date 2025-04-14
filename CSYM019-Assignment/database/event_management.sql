@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Create admin users table
-CREATE TABLE IF NOT EXISTS admin_users (
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -25,6 +25,6 @@ CREATE TABLE IF NOT EXISTS admin_users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert default admin user (password: admin123)
-INSERT INTO admin_users (username, password, email) 
-VALUES ('admin', '$2y$10$8K1p/a0dL1LXMIgZ5n0Qe.8K1p/a0dL1LXMIgZ5n0Qe', 'admin@example.com'); 
+-- Insert default admin user (password: admin)
+INSERT INTO users (username, password, email) 
+VALUES ('admin', 'admin', 'admin@example.com'); 

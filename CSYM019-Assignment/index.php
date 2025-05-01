@@ -164,6 +164,8 @@ if($result === false) {
             <div class="nav-links">
                 <a href="index.php" class="active"><i class="fas fa-home"></i> All Events</a>
                 <a href="upcoming.php"><i class="fas fa-list"></i> Upcoming Events</a>
+                <a href="about.php"><i class="fas fa-info-circle"></i> About Us</a>
+                <a href="help.php"><i class="fas fa-question-circle"></i> Help</a>
                 <a href="admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
         </div>

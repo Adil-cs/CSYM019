@@ -92,7 +92,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             margin-bottom: 2rem;
         }
         .login-header h2 {
-            color: #2c3e50;
+            color:turquoise;
             margin-bottom: 0.5rem;
         }
         .form-group {
@@ -138,7 +138,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             gap: 0.5rem;
         }
         .btn-primary {
-            background: #3498db;
+            background:turquoise;
             color: white;
         }
         .btn-primary:hover {

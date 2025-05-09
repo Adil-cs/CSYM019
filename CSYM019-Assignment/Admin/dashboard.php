@@ -71,7 +71,7 @@ if ($result === false) {
             border-bottom: 1px solid #ddd;
         }
         .events-table th {
-            background: #f8f9fa;
+            background: gray;
             font-weight: 600;
         }
         .btn {

@@ -182,7 +182,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
+            background-color: black;
             margin: 0;
             padding: 0;
         }
@@ -208,7 +208,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         }
 
         .form-container {
-            background-color: white;
+            background-color: #2c3e50;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);

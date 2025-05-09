@@ -175,7 +175,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             max-width: 800px;
             margin: 2rem auto;
             padding: 2rem;
-            background: #fff;
+            background: #2c3e50;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }

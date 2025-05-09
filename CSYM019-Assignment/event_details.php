@@ -83,7 +83,7 @@ $linkedin_url = "https://www.linkedin.com/shareArticle?mini=true&url=" . $curren
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
+            background-color: black;
             margin: 0;
             padding: 0;
         }
@@ -153,7 +153,7 @@ $linkedin_url = "https://www.linkedin.com/shareArticle?mini=true&url=" . $curren
         .event-description {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: #34495e;
+            color:white;
             margin-bottom: 2rem;
         }
 
@@ -174,7 +174,7 @@ $linkedin_url = "https://www.linkedin.com/shareArticle?mini=true&url=" . $curren
         .social-share {
             margin-top: 2rem;
             padding: 1rem;
-            background-color: #f8f9fa;
+            background-color:black;
             border-radius: 8px;
         }
 

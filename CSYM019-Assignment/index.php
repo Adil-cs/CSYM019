@@ -45,113 +45,7 @@ if($result === false) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        .event-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .event-image {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-            background-color: #f8f9fa;
-        }
-
-        .event-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .event-card:hover .event-image {
-            transform: scale(1.05);
-        }
-
-        .event-content {
-            padding: 1.5rem;
-        }
-
-        .event-title {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .event-card:hover .event-title {
-            color: #3498db;
-        }
-
-        .event-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            color: #7f8c8d;
-        }
-
-        .event-meta i {
-            margin-right: 0.5rem;
-        }
-
-        .event-description {
-            color: #34495e;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .event-category {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #f1f1f1;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            color: #7f8c8d;
-        }
-
-        .image-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            color: #6c757d;
-        }
-
-        .image-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .image-error {
-            color: #dc3545;
-            font-size: 0.875rem;
-            text-align: center;
-            padding: 0.5rem;
-        }
-
-        .animate__animated {
-            animation-duration: 1s;
-        }
-
-        @media (max-width: 768px) {
-            .event-image {
-                height: 150px;
-            }
-        }
+        /* REMOVE the .event-card, .event-card:hover, .event-title, .event-meta, etc. styles here to avoid conflicts with css/style.css */
     </style>
 </head>
 <body>
@@ -179,22 +73,29 @@ if($result === false) {
                 <input type="text" id="searchInput" placeholder="Search events...">
                 <select id="categoryFilter">
                     <option value="">All Categories</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Music">Music</option>
-                    <option value="Art">Art</option>
-                    <option value="Food">Food</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Business">Business</option>
-                    <option value="Education">Education</option>
-                    <option value="Other">Other</option>
+                    <option value="sports">Sports</option>
+                    <option value="music">Music</option>
+                    <option value="art">Art</option>
+                    <option value="food">Food</option>
+                    <option value="technology">Technology</option>
+                    <option value="business">Business</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
         </header>
+        <div class="hero-image-container">
+            <div class="hero-image-wrapper">
+                <img src="/uploads/events/event.jpg" alt="Community Events" class="hero-image">
+                <button class="hero-button" onclick="scrollToEvents()">Join an Event</button>
+                <div class="hero-overlay"></div>
+            </div>
+        </div>
 
         <div class="events-grid" id="eventsContainer">
             <?php if(mysqli_num_rows($result) > 0): ?>
                 <?php while($row = mysqli_fetch_assoc($result)): ?>
-                    <div class="event-card animate__animated animate__fadeInUp">
+                    <a href="event_details.php?id=<?php echo $row['id']; ?>" class="event-card animate__animated animate__fadeInUp" style="text-decoration:none; color:inherit;">
                         <div class="event-image">
                             <?php if(!empty($row['image_path'])): ?>
                                 <?php
@@ -225,9 +126,8 @@ if($result === false) {
                             </div>
                             <p class="event-description"><?php echo substr(htmlspecialchars($row['description']), 0, 150) . '...'; ?></p>
                             <span class="event-category"><?php echo htmlspecialchars($row['category']); ?></span>
-                            <a href="event_details.php?id=<?php echo $row['id']; ?>" class="btn btn-outline">View Details</a>
                         </div>
-                    </div>
+                    </a>
                 <?php endwhile; ?>
             <?php else: ?>
                 <div class="no-events animate__animated animate__fadeIn">
@@ -297,10 +197,29 @@ if($result === false) {
             const searchInput = document.getElementById('searchInput');
             const categoryFilter = document.getElementById('categoryFilter');
             const eventCards = document.querySelectorAll('.event-card');
+            const heroWrapper = document.querySelector('.hero-image-wrapper');
+
+            // Scroll animation for hero image
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 100) {
+                    heroWrapper.classList.add('scrolled');
+                } else {
+                    heroWrapper.classList.remove('scrolled');
+                }
+            });
+
+            // Smooth scroll to events
+            window.scrollToEvents = function() {
+                const eventsSection = document.getElementById('eventsContainer');
+                eventsSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
 
             function filterEvents() {
                 const searchTerm = searchInput.value.toLowerCase();
-                const selectedCategory = categoryFilter.value;
+                const selectedCategory = categoryFilter.value.toLowerCase();
 
                 eventCards.forEach(card => {
                     const title = card.querySelector('.event-title').textContent.toLowerCase();
@@ -308,7 +227,7 @@ if($result === false) {
                     const category = card.querySelector('.event-category').textContent.toLowerCase();
 
                     const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-                    const matchesCategory = !selectedCategory || category === selectedCategory.toLowerCase();
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
 
                     if (matchesSearch && matchesCategory) {
                         card.style.display = 'block';

@@ -64,21 +64,21 @@
                             <div class="member-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <h3>John Doe</h3>
+                            <h3>Adil Bin Arif</h3>
                             <p>Founder & CEO</p>
                         </div>
                         <div class="team-member">
                             <div class="member-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <h3>Jane Smith</h3>
+                            <h3>Adil</h3>
                             <p>Event Coordinator</p>
                         </div>
                         <div class="team-member">
                             <div class="member-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <h3>Mike Johnson</h3>
+                            <h3>Adil</h3>
                             <p>Community Manager</p>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
         }
 
         .about-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #2c3e50;
             padding: 2rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
@@ -136,7 +136,7 @@
 
         .about-icon {
             font-size: 2.5rem;
-            color: var(--primary-color);
+            color: white;
             margin-bottom: 1rem;
         }
 

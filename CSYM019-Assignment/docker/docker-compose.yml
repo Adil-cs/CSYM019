@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ../uploads:/var/www/html/uploads
+      - ../config:/var/www/html/config
+      - ../public:/var/www/html/public
+      - ../Admin:/var/www/html/Admin
+      - ../css:/var/www/html/css
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=event_management
+    networks:
+      - event_network
+
+  db:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: event_management
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database:/docker-entrypoint-initdb.d
+    networks:
+      - event_network
+
+networks:
+  event_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

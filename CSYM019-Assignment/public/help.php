@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Help Center - Community Events</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,14 +14,14 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.php" class="navbar-brand">
-                <i class="fas fa-calendar-alt"></i> Community Events
+                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
             </a>
             <div class="nav-links">
                 <a href="index.php"><i class="fas fa-home"></i> All Events</a>
                 <a href="upcoming.php"><i class="fas fa-list"></i> Upcoming Events</a>
                 <a href="about.php"><i class="fas fa-info-circle"></i> About Us</a>
                 <a href="help.php" class="active"><i class="fas fa-question-circle"></i> Help</a>
-                <a href="admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
+                <a href="../Admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
         </div>
     </nav>
@@ -107,7 +107,7 @@
                         <i class="fas fa-phone"></i> Call Support
                     </a>
                     <a href="#" class="contact-button">
-                        <i class="fas fa-comments"></i> Live Chat
+                        <i class="fas fa-comments"></i> Live Chat(Coming soon)
                     </a>
                 </div>
             </div>

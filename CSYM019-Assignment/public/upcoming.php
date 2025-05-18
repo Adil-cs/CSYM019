@@ -1,13 +1,11 @@
 <?php
-require_once "config/database.php";
+require_once "../config/database.php";
 
-// Fetch only upcoming events
-$sql = "SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC";
-$result = mysqli_query($conn, $sql);
-
-// Check if the query was successful
-if($result === false) {
-    die("Error fetching events: " . mysqli_error($conn));
+// Get upcoming events (today or later)
+$q = "SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC";
+$res = mysqli_query($conn, $q);
+if($res === false) {
+    die("Query error: " . mysqli_error($conn));
 }
 ?>
 
@@ -17,7 +15,7 @@ if($result === false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Events - Community Events</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
@@ -121,16 +119,18 @@ if($result === false) {
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.php" class="navbar-brand">
-                <i class="fas fa-calendar-alt"></i> Community Events
+                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
             </a>
             <div class="nav-links">
                 <a href="index.php"><i class="fas fa-home"></i> All Events</a>
                 <a href="upcoming.php" class="active"><i class="fas fa-list"></i> Upcoming Events</a>
-                <a href="admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
+                <a href="about.php"><i class="fas fa-info-circle"></i> About Us</a>
+                <a href="help.php"><i class="fas fa-question-circle"></i> Help</a>
+                <a href="../Admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
         </div>
     </nav>
@@ -142,24 +142,16 @@ if($result === false) {
         </header>
 
         <div class="events-grid" id="eventsContainer">
-            <?php if(mysqli_num_rows($result) > 0): ?>
-                <?php while($row = mysqli_fetch_assoc($result)): ?>
+            <?php if(mysqli_num_rows($res) > 0): ?>
+                <?php while($row = mysqli_fetch_assoc($res)): ?>
                     <div class="event-card animate__animated animate__fadeInUp">
-                        <?php
-                        // Debug image path
-                        $image_path = !empty($row['image_path']) ? $row['image_path'] : null;
-                        
-                        if($image_path && file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . $image_path)) {
-                            echo '<img src="' . htmlspecialchars($image_path) . '" alt="' . htmlspecialchars($row['title']) . '" class="event-image">';
-                        } else {
-                            echo '<div class="event-image no-image">';
-                            echo '<i class="fas fa-image"></i>';
-                            if($image_path) {
-                                echo '<div class="image-error">Image not found: ' . htmlspecialchars($image_path) . '</div>';
-                            }
-                            echo '</div>';
-                        }
-                        ?>
+                        <?php if(!empty($row['image_path'])): ?>
+                            <img src="/<?php echo htmlspecialchars($row['image_path']); ?>" alt="<?php echo htmlspecialchars($row['title']); ?>" class="event-image">
+                        <?php else: ?>
+                            <div class="event-image no-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        <?php endif; ?>
                         <div class="event-content">
                             <h3 class="event-title"><?php echo htmlspecialchars($row['title']); ?></h3>
                             <div class="event-meta">
@@ -181,9 +173,9 @@ if($result === false) {
     </div>
 
     <script>
+        // Animate event cards when they appear
         document.addEventListener('DOMContentLoaded', function() {
             const eventCards = document.querySelectorAll('.event-card');
-            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -194,7 +186,6 @@ if($result === false) {
             }, {
                 threshold: 0.1
             });
-            
             eventCards.forEach(card => {
                 observer.observe(card);
             });

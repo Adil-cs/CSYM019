@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Community Events</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,14 +14,14 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.php" class="navbar-brand">
-                <i class="fas fa-calendar-alt"></i> Community Events
+                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
             </a>
             <div class="nav-links">
                 <a href="index.php"><i class="fas fa-home"></i> All Events</a>
                 <a href="upcoming.php"><i class="fas fa-list"></i> Upcoming Events</a>
                 <a href="about.php" class="active"><i class="fas fa-info-circle"></i> About Us</a>
                 <a href="help.php"><i class="fas fa-question-circle"></i> Help</a>
-                <a href="admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
+                <a href="../Admin/login.php"><i class="fas fa-user-shield"></i> Admin</a>
             </div>
         </div>
     </nav>
@@ -31,6 +31,24 @@
             <h1>About Community Events</h1>
             <p>Connecting Communities Through Shared Experiences</p>
         </header>
+
+        <section class="module-details" style="background:#f8f9fa;padding:1.5rem 2rem;margin-bottom:2rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05);color:#222;">
+            <h2 style="color:#0077B5;">Module & Assessment Details</h2>
+            <ul style="list-style:none;padding:0;">
+                <li><strong>Module Level:</strong> Level 7</li>
+                <li><strong>Module Code + Name:</strong> CSYM019 | Internet Programming</li>
+                <li><strong>Credit Value:</strong> 20</li>
+                <li><strong>Module Leader:</strong> Dr. Ahmed Basil | <a href="mailto:ahmed.basil2@northampton.ac.uk">ahmed.basil2@northampton.ac.uk</a></li>
+                <li><strong>Assessment Code + Type:</strong> AS1</li>
+                <li><strong>Assessment Deliverable(s):</strong> The purpose of this assignment is to assess your ability to create a Dynamic Web Application Project.</li>
+                <li><strong>Weighting (%):</strong> 100%</li>
+                <li><strong>Submission Date:</strong> 23rd of May 2025 23:59 (British Time)</li>
+            </ul>
+            <div style="margin-top:1rem;">
+                <strong>Student Name:</strong> Adil Bin Arif<br>
+                <strong>Student ID:</strong> 24831748
+            </div>
+        </section>
 
         <div class="about-content animate__animated animate__fadeIn">
             <section class="about-section">
@@ -85,28 +103,6 @@
                 </div>
             </section>
 
-            <section class="about-section">
-                <div class="about-card">
-                    <div class="about-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h2>Our Impact</h2>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <h3>10,000+</h3>
-                            <p>Events Created</p>
-                        </div>
-                        <div class="stat-item">
-                            <h3>50,000+</h3>
-                            <p>Active Users</p>
-                        </div>
-                        <div class="stat-item">
-                            <h3>100+</h3>
-                            <p>Partner Organizations</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     </div>
 

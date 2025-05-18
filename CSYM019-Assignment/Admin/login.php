@@ -10,62 +10,55 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
 require_once "../config/database.php";
 
-$username = $password = "";
-$username_err = $password_err = $login_err = "";
+$user = $pass = "";
+$user_err = $pass_err = $login_err = "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    // Validate username
-    if(empty(trim($_POST["username"]))){
-        $username_err = "Please enter username.";
-    } else{
-        $username = trim($_POST["username"]);
+    // Check username
+    if(empty(trim($_POST["username"]))) {
+        $user_err = "Please enter username.";
+    } else {
+        $user = trim($_POST["username"]);
     }
-    
-    // Validate password
-    if(empty(trim($_POST["password"]))){
-        $password_err = "Please enter your password.";
-    } else{
-        $password = trim($_POST["password"]);
+    // Check password
+    if(empty(trim($_POST["password"]))) {
+        $pass_err = "Please enter your password.";
+    } else {
+        $pass = trim($_POST["password"]);
     }
-    
-    // Validate credentials
-    if(empty($username_err) && empty($password_err)){
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
-        
-        if($stmt = mysqli_prepare($conn, $sql)){
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
-            $param_username = $username;
-            
+    // Try login
+    if(empty($user_err) && empty($pass_err)){
+        $q = "SELECT id, username, password FROM users WHERE username = ?";
+        if($stmt = mysqli_prepare($conn, $q)){
+            mysqli_stmt_bind_param($stmt, "s", $param_user);
+            $param_user = $user;
             if(mysqli_stmt_execute($stmt)){
                 mysqli_stmt_store_result($stmt);
-                
-                if(mysqli_stmt_num_rows($stmt) == 1){                    
-                    mysqli_stmt_bind_result($stmt, $id, $username, $stored_password);
+                if(mysqli_stmt_num_rows($stmt) == 1){
+                    mysqli_stmt_bind_result($stmt, $id, $user, $stored_pass);
                     if(mysqli_stmt_fetch($stmt)){
-                        if($password === $stored_password){
+                        if($pass === $stored_pass){
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
-                            $_SESSION["username"] = $username;                            
+                            $_SESSION["username"] = $user;
                             
                             // Redirect user to dashboard page
                             header("location: dashboard.php");
                             exit;
-                        } else{
+                        } else {
                             $login_err = "Invalid username or password.";
                         }
                     }
-                } else{
+                } else {
                     $login_err = "Invalid username or password.";
                 }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
+            } else {
+                echo "Something went wrong. Try again.";
             }
-
             mysqli_stmt_close($stmt);
         }
     }
-    
     mysqli_close($conn);
 }
 ?>
@@ -75,17 +68,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Community Events</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        body {
+            min-height: 100vh;
+            background: #000;
+        }
+        .login-wrapper {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .login-container {
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
+            max-width: 500px;
+            min-width: 400px;
+            min-height: 450px;
+            margin: auto;
+            padding: 3rem 2.5rem;
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .login-header {
             text-align: center;
@@ -157,47 +165,45 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="../index.php" class="navbar-brand">
-                <i class="fas fa-calendar-alt"></i> Community Events
+            <a href="/public/index.php" class="navbar-brand">
+                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
             </a>
             <div class="nav-links">
-                <a href="../index.php"><i class="fas fa-home"></i> Home</a>
+                <a href="/public/index.php"><i class="fas fa-home"></i> Home</a>
             </div>
         </div>
     </nav>
-
-    <div class="login-container">
-        <div class="login-header">
-            <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
-            <p>Please fill in your credentials to login</p>
-        </div>
-        
-        <?php 
-        if(!empty($login_err)){
-            echo '<div class="alert alert-danger">' . $login_err . '</div>';
-        }        
-        ?>
-
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group">
-                <label><i class="fas fa-user"></i> Username</label>
-                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
-                <span class="invalid-feedback"><?php echo $username_err; ?></span>
-            </div>    
-            <div class="form-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
-                <span class="invalid-feedback"><?php echo $password_err; ?></span>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-header">
+                <h2> Admin Login</h2>
+                <p>Please fill in your credentials to login</p>
             </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Login
+            <?php 
+            if(!empty($login_err)){
+                echo '<div class="alert alert-danger">' . $login_err . '</div>';
+            }        
+            ?>
+            <form action="login.php" method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn">
+                    Login
                 </button>
+            </form>
+            <div class="form-footer">
+                <a href="/public/index.php">Back to Home</a>
             </div>
-        </form>
+        </div>
     </div>
 </body>
 </html> 

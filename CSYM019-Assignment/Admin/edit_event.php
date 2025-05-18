@@ -11,8 +11,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 require_once "../config/database.php";
 
 // Define variables and initialize with empty values
-$title = $description = $event_date = $location = $category = $image_path = "";
-$title_err = $description_err = $date_err = $location_err = $category_err = $image_err = "";
+$title = $desc = $date = $loc = $cat = $img_path = "";
+$title_err = $desc_err = $date_err = $loc_err = $cat_err = $img_err = "";
 
 // Processing form data when form is submitted
 if(isset($_POST["id"]) && !empty($_POST["id"])){
@@ -28,34 +28,34 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     
     // Validate description
     if(empty(trim($_POST["description"]))){
-        $description_err = "Please enter a description.";     
+        $desc_err = "Please enter a description.";     
     } else{
-        $description = trim($_POST["description"]);
+        $desc = trim($_POST["description"]);
     }
     
     // Validate date
     if(empty(trim($_POST["date"]))){
         $date_err = "Please enter a date.";     
     } else{
-        $event_date = trim($_POST["date"]);
+        $date = trim($_POST["date"]);
     }
     
     // Validate location
     if(empty(trim($_POST["location"]))){
-        $location_err = "Please enter a location.";     
+        $loc_err = "Please enter a location.";     
     } else{
-        $location = trim($_POST["location"]);
+        $loc = trim($_POST["location"]);
     }
     
     // Validate category
     if(empty(trim($_POST["category"]))){
-        $category_err = "Please select a category.";     
+        $cat_err = "Please select a category.";     
     } else{
-        $category = trim($_POST["category"]);
+        $cat = trim($_POST["category"]);
     }
 
     // Handle image upload
-    $upload_dir = "/var/www/html/uploads/events/";
+    $upload_dir = "../uploads/events/";
     if(isset($_FILES["image"]) && $_FILES["image"]["error"] == 0){
         $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
         $filename = $_FILES["image"]["name"];
@@ -65,62 +65,54 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Verify file extension
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         if(!array_key_exists($ext, $allowed)) {
-            $image_err = "Error: Please select a valid file format (JPG, JPEG, PNG, GIF).";
+            $img_err = "Invalid file format.";
         }
     
         // Verify file size - 5MB maximum
         $maxsize = 5 * 1024 * 1024;
         if($filesize > $maxsize) {
-            $image_err = "Error: File size is larger than the allowed limit of 5MB.";
+            $img_err = "File too large.";
         }
     
-        if(empty($image_err)){
+        if(empty($img_err)){
             // Generate unique filename
-            $new_filename = uniqid() . '.' . $ext;
-            $target_path = $upload_dir . $new_filename;
+            $newname = uniqid() . '.' . $ext;
+            $target = $upload_dir . $newname;
             
             // Ensure upload directory exists and has proper permissions
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0777, true);
             }
             
-            if(move_uploaded_file($_FILES["image"]["tmp_name"], $target_path)){
-                $image_path = "uploads/events/" . $new_filename;
+            if(move_uploaded_file($_FILES["image"]["tmp_name"], $target)){
+                $img_path = "uploads/events/" . $newname;
             } else {
-                $image_err = "Error uploading file. Please try again.";
+                $img_err = "Upload failed.";
             }
         }
     }
     
     // Check input errors before updating the database
-    if(empty($title_err) && empty($description_err) && empty($date_err) && empty($location_err) && empty($category_err) && empty($image_err)){
+    if(empty($title_err) && empty($desc_err) && empty($date_err) && empty($loc_err) && empty($cat_err) && empty($img_err)){
         // Prepare an update statement
-        if($image_path) {
-            $sql = "UPDATE events SET title=?, description=?, event_date=?, location=?, category=?, image_path=? WHERE id=?";
+        if($img_path) {
+            $q = "UPDATE events SET title=?, description=?, event_date=?, location=?, category=?, image_path=? WHERE id=?";
         } else {
-            $sql = "UPDATE events SET title=?, description=?, event_date=?, location=?, category=? WHERE id=?";
+            $q = "UPDATE events SET title=?, description=?, event_date=?, location=?, category=? WHERE id=?";
         }
          
-        if($stmt = mysqli_prepare($conn, $sql)){
-            if($image_path) {
-                mysqli_stmt_bind_param($stmt, "ssssssi", $param_title, $param_description, $param_date, $param_location, $param_category, $param_image, $param_id);
-                $param_image = $image_path;
+        if($stmt = mysqli_prepare($conn, $q)){
+            if($img_path) {
+                mysqli_stmt_bind_param($stmt, "ssssssi", $title, $desc, $date, $loc, $cat, $img_path, $id);
             } else {
-                mysqli_stmt_bind_param($stmt, "sssssi", $param_title, $param_description, $param_date, $param_location, $param_category, $param_id);
+                mysqli_stmt_bind_param($stmt, "sssssi", $title, $desc, $date, $loc, $cat, $id);
             }
             
-            $param_title = $title;
-            $param_description = $description;
-            $param_date = $event_date;
-            $param_location = $location;
-            $param_category = $category;
-            $param_id = $id;
-            
             if(mysqli_stmt_execute($stmt)){
-                echo '<script>alert("Event updated successfully!"); window.location.href = "dashboard.php";</script>';
+                echo '<script>alert("Event updated!"); window.location.href = "dashboard.php";</script>';
                 exit;
             } else{
-                echo '<script>alert("Error updating event. Please try again.");</script>';
+                echo '<script>alert("Error updating event.");</script>';
             }
 
             mysqli_stmt_close($stmt);
@@ -135,30 +127,29 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         $id =  trim($_GET["id"]);
         
         // Prepare a select statement
-        $sql = "SELECT * FROM events WHERE id = ?";
-        if($stmt = mysqli_prepare($conn, $sql)){
-            mysqli_stmt_bind_param($stmt, "i", $param_id);
-            $param_id = $id;
+        $q = "SELECT * FROM events WHERE id = ?";
+        if($stmt = mysqli_prepare($conn, $q)){
+            mysqli_stmt_bind_param($stmt, "i", $id);
             
             if(mysqli_stmt_execute($stmt)){
-                $result = mysqli_stmt_get_result($stmt);
+                $res = mysqli_stmt_get_result($stmt);
     
-                if(mysqli_num_rows($result) == 1){
-                    $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                if(mysqli_num_rows($res) == 1){
+                    $row = mysqli_fetch_array($res, MYSQLI_ASSOC);
                     
                     $title = $row["title"];
-                    $description = $row["description"];
-                    $event_date = $row["event_date"];
-                    $location = $row["location"];
-                    $category = $row["category"];
-                    $image_path = $row["image_path"];
+                    $desc = $row["description"];
+                    $date = $row["event_date"];
+                    $loc = $row["location"];
+                    $cat = $row["category"];
+                    $img_path = $row["image_path"];
                 } else{
                     header("location: error.php");
                     exit();
                 }
                 
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+                echo "Something went wrong.";
             }
         }
         
@@ -342,43 +333,43 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     <span class="invalid-feedback"><?php echo $title_err; ?></span>
                 </div>
                 
-                <div class="form-group <?php echo (!empty($description_err)) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (!empty($desc_err)) ? 'has-error' : ''; ?>">
                     <label>Description</label>
-                    <textarea name="description" class="form-control" rows="5"><?php echo $description; ?></textarea>
-                    <span class="invalid-feedback"><?php echo $description_err; ?></span>
+                    <textarea name="description" class="form-control" rows="5"><?php echo $desc; ?></textarea>
+                    <span class="invalid-feedback"><?php echo $desc_err; ?></span>
                 </div>
                 
                 <div class="form-group <?php echo (!empty($date_err)) ? 'has-error' : ''; ?>">
                     <label>Event Date</label>
-                    <input type="date" name="date" class="date-input" value="<?php echo $event_date; ?>">
+                    <input type="date" name="date" class="date-input" value="<?php echo $date; ?>">
                     <span class="invalid-feedback"><?php echo $date_err; ?></span>
                 </div>
                 
-                <div class="form-group <?php echo (!empty($location_err)) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (!empty($loc_err)) ? 'has-error' : ''; ?>">
                     <label>Location</label>
-                    <input type="text" name="location" class="form-control" value="<?php echo $location; ?>">
-                    <span class="invalid-feedback"><?php echo $location_err; ?></span>
+                    <input type="text" name="location" class="form-control" value="<?php echo $loc; ?>">
+                    <span class="invalid-feedback"><?php echo $loc_err; ?></span>
                 </div>
                 
-                <div class="form-group <?php echo (!empty($category_err)) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (!empty($cat_err)) ? 'has-error' : ''; ?>">
                     <label>Category</label>
                     <select name="category" class="category-select">
                         <option value="">Select a category</option>
-                        <option value="Conference" <?php echo ($category == "Conference") ? 'selected' : ''; ?>>Conference</option>
-                        <option value="Workshop" <?php echo ($category == "Workshop") ? 'selected' : ''; ?>>Workshop</option>
-                        <option value="Seminar" <?php echo ($category == "Seminar") ? 'selected' : ''; ?>>Seminar</option>
-                        <option value="Networking" <?php echo ($category == "Networking") ? 'selected' : ''; ?>>Networking</option>
-                        <option value="Other" <?php echo ($category == "Other") ? 'selected' : ''; ?>>Other</option>
+                        <option value="Conference" <?php echo ($cat == "Conference") ? 'selected' : ''; ?>>Conference</option>
+                        <option value="Workshop" <?php echo ($cat == "Workshop") ? 'selected' : ''; ?>>Workshop</option>
+                        <option value="Seminar" <?php echo ($cat == "Seminar") ? 'selected' : ''; ?>>Seminar</option>
+                        <option value="Networking" <?php echo ($cat == "Networking") ? 'selected' : ''; ?>>Networking</option>
+                        <option value="Other" <?php echo ($cat == "Other") ? 'selected' : ''; ?>>Other</option>
                     </select>
-                    <span class="invalid-feedback"><?php echo $category_err; ?></span>
+                    <span class="invalid-feedback"><?php echo $cat_err; ?></span>
                 </div>
                 
-                <div class="form-group <?php echo (!empty($image_err)) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (!empty($img_err)) ? 'has-error' : ''; ?>">
                     <label>Event Image</label>
-                    <?php if($image_path): ?>
+                    <?php if($img_path): ?>
                         <div class="current-image">
                             <p>Current Image:</p>
-                            <img src="../<?php echo htmlspecialchars($image_path); ?>" alt="Current event image">
+                            <img src="../<?php echo htmlspecialchars($img_path); ?>" alt="Current event image">
                         </div>
                     <?php endif; ?>
                     <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(this)">
@@ -386,7 +377,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         <p>New Image Preview:</p>
                         <img id="preview" src="#" alt="Image preview">
                     </div>
-                    <span class="invalid-feedback"><?php echo $image_err; ?></span>
+                    <span class="invalid-feedback"><?php echo $img_err; ?></span>
                 </div>
                 
                 <div class="form-actions">

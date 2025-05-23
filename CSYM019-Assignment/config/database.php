@@ -1,14 +1,14 @@
 <?php
-// Get environment variables
-$db_host = getenv('DB_HOST') ?: 'db';
-$db_user = getenv('DB_USER') ?: 'root';
-$db_pass = getenv('DB_PASSWORD') ?: 'root';
-$db_name = getenv('DB_NAME') ?: 'event_management';
+// my local database settings for connecting to mysql
+$myDatabaseServer = getenv('DB_HOST') ?: 'db';
+$myDatabaseUsername = getenv('DB_USER') ?: 'root';
+$myDatabasePassword = getenv('DB_PASSWORD') ?: 'root';
+$myDatabaseName = getenv('DB_NAME') ?: 'event_management';
 
-// Attempt to connect to MySQL database
-$conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+// trying to establish connection with my database
+$myDatabaseLink = mysqli_connect($myDatabaseServer, $myDatabaseUsername, $myDatabasePassword, $myDatabaseName);
 
-// Check connection
-if($conn === false){
-    die("ERROR: Could not connect. " . mysqli_connect_error());
+// if connection fails, show what went wrong
+if($myDatabaseLink === false){
+    die("Oops! Couldn't connect to database. " . mysqli_connect_error());
 } 

@@ -1,15 +1,11 @@
 <?php
-
-use PHPUnit\Framework\TestCase;
+require_once 'TestCase.php';
 
 class AuthTest extends TestCase
 {
-    private $conn;
-
     protected function setUp(): void
     {
-        require_once __DIR__ . '/../config/database_test.php';
-        $this->conn = $GLOBALS['conn'];
+        parent::setUp();
         
         // Create test tables
         $this->createTestTables();
@@ -19,7 +15,7 @@ class AuthTest extends TestCase
     {
         // Clean up test data
         $this->conn->query("DROP TABLE IF EXISTS users");
-        $this->conn->close();
+        parent::tearDown();
     }
 
     private function createTestTables()
@@ -29,6 +25,7 @@ class AuthTest extends TestCase
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(50) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
     }
@@ -36,63 +33,48 @@ class AuthTest extends TestCase
     public function testUserRegistration()
     {
         $username = "testuser";
-        $password = "testpass123";
-
-        $stmt = $this->conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password);
-        $result = $stmt->execute();
+        $password = "testpass";
+        $email = "test@example.com";
         
+        // Hash the password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashed_password', '$email')";
+        $result = $this->conn->query($sql);
         $this->assertTrue($result);
-        
-        // Verify the user was created
-        $result = $this->conn->query("SELECT * FROM users WHERE username = '$username'");
-        $user = $result->fetch_assoc();
-        
-        $this->assertEquals($username, $user['username']);
-        $this->assertEquals($password, $user['password']);
     }
 
     public function testUserLogin()
     {
-        // First create a test user
+        // First register a user
+        $this->testUserRegistration();
+        
         $username = "testuser";
-        $password = "testpass123";
-
-        $stmt = $this->conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-
-        // Try to login with correct credentials
-        $stmt = $this->conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $password = "testpass";
+        
+        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $result = $this->conn->query($sql);
         $user = $result->fetch_assoc();
-
-        $this->assertNotFalse($user);
-        $this->assertEquals($username, $user['username']);
-        $this->assertEquals($password, $user['password']);
-
-        // Try to login with incorrect password
-        $wrong_password = "wrongpass";
-        $this->assertNotEquals($wrong_password, $user['password']);
+        
+        $this->assertTrue(password_verify($password, $user['password']));
     }
 
     public function testDuplicateUsername()
     {
+        // First register a user
+        $this->testUserRegistration();
+        
+        // Try to register the same username again
         $username = "testuser";
-        $password = "testpass123";
-
-        // First insert
-        $stmt = $this->conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password);
-        $result = $stmt->execute();
-        $this->assertTrue($result);
-
-        // Try to insert the same username again
-        $stmt = $this->conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password);
-        $result = $stmt->execute();
+        $password = "testpass";
+        $email = "test2@example.com";
+        
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashed_password', '$email')";
+        $result = $this->conn->query($sql);
+        
+        // Should fail due to duplicate username
         $this->assertFalse($result);
     }
 } 

@@ -1,9 +1,9 @@
 <?php
 require_once "../config/database.php";
-// Make sure events table exists
-$table = mysqli_query($conn, "SHOW TABLES LIKE 'events'");
-if(mysqli_num_rows($table) == 0) {
-    $create = "CREATE TABLE IF NOT EXISTS events (
+// checking if my events table exists, if not create it
+$checkTable = mysqli_query($myDatabaseLink, "SHOW TABLES LIKE 'events'");
+if(mysqli_num_rows($checkTable) == 0) {
+    $createTableQuery = "CREATE TABLE IF NOT EXISTS events (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         description TEXT NOT NULL,
@@ -12,15 +12,16 @@ if(mysqli_num_rows($table) == 0) {
         category VARCHAR(50) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
-    if(!mysqli_query($conn, $create)) {
-        die("Table error: " . mysqli_error($conn));
+    if(!mysqli_query($myDatabaseLink, $createTableQuery)) {
+        die("Table creation failed: " . mysqli_error($myDatabaseLink));
     }
 }
-// Get all events
-$q = "SELECT e.*, COUNT(r.id) as registered_count FROM events e LEFT JOIN event_registrations r ON e.id = r.event_id GROUP BY e.id ORDER BY e.event_date ASC";
-$res = mysqli_query($conn, $q);
-if($res === false) {
-    die("Query error: " . mysqli_error($conn));
+
+// getting all events with their registration counts
+$fetchEventsQuery = "SELECT e.*, COUNT(r.id) as registered_count FROM events e LEFT JOIN event_registrations r ON e.id = r.event_id GROUP BY e.id ORDER BY e.event_date ASC";
+$eventResults = mysqli_query($myDatabaseLink, $fetchEventsQuery);
+if($eventResults === false) {
+    die("Query failed: " . mysqli_error($myDatabaseLink));
 }
 ?>
 
@@ -66,23 +67,23 @@ if($res === false) {
                 <div class="hero-overlay"></div>
             </div>
         </div>
-        <div class="search-filter">
-            <input type="text" id="searchInput" placeholder="Search events...">
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="sports">Sports</option>
-                <option value="music">Music</option>
-                <option value="art">Art</option>
-                <option value="food">Food</option>
-                <option value="technology">Technology</option>
-                <option value="business">Business</option>
-                <option value="education">Education</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Search events...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="sports">Sports</option>
+                    <option value="music">Music</option>
+                    <option value="art">Art</option>
+                    <option value="food">Food</option>
+                    <option value="technology">Technology</option>
+                    <option value="business">Business</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
         <div class="events-grid" id="eventsContainer">
-            <?php if(mysqli_num_rows($res) > 0): ?>
-                <?php while($row = mysqli_fetch_assoc($res)): ?>
+            <?php if(mysqli_num_rows($eventResults) > 0): ?>
+                <?php while($row = mysqli_fetch_assoc($eventResults)): ?>
                     <a href="event_details.php?id=<?php echo $row['id']; ?>" class="event-card animate__animated animate__fadeInUp" style="text-decoration:none; color:inherit;">
                         <div class="event-image">
                             <?php if(!empty($row['image_path'])): ?>
@@ -156,4 +157,5 @@ if($res === false) {
         });
     </script>
 </body>
+</html> 
 </html> 

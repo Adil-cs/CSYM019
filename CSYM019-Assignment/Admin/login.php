@@ -1,65 +1,84 @@
 <?php
-// Initialize the session
-session_start();
+require_once "../config/utils.php";
+require_once "../config/database.php";
 
-// Check if user is already logged in
-if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+// starting my user session for tracking login state
+userSessionInit();
+
+// if user is already logged in, send them to dashboard
+if(isset($_SESSION["isLoggedIn"]) && $_SESSION["isLoggedIn"] === true){
     header("location: dashboard.php");
     exit;
 }
 
-require_once "../config/database.php";
+// setting up my form variables
+$userLoginName = $userLoginPass = "";
+$nameErrorMsg = $passErrorMsg = $loginErrorMsg = "";
 
-$user = $pass = "";
-$user_err = $pass_err = $login_err = "";
-
+// handling the form when submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    // Check username
+    // checking username field
     if(empty(trim($_POST["username"]))) {
-        $user_err = "Please enter username.";
+        $nameErrorMsg = "Hey, you forgot to enter your username!";
     } else {
-        $user = trim($_POST["username"]);
+        $userLoginName = trim($_POST["username"]);
     }
-    // Check password
+
+    // checking password field
     if(empty(trim($_POST["password"]))) {
-        $pass_err = "Please enter your password.";
+        $passErrorMsg = "Don't forget your password!";
     } else {
-        $pass = trim($_POST["password"]);
+        $userLoginPass = trim($_POST["password"]);
     }
-    // Try login
-    if(empty($user_err) && empty($pass_err)){
-        $q = "SELECT id, username, password FROM users WHERE username = ?";
-        if($stmt = mysqli_prepare($conn, $q)){
-            mysqli_stmt_bind_param($stmt, "s", $param_user);
-            $param_user = $user;
-            if(mysqli_stmt_execute($stmt)){
-                mysqli_stmt_store_result($stmt);
-                if(mysqli_stmt_num_rows($stmt) == 1){
-                    mysqli_stmt_bind_result($stmt, $id, $user, $stored_pass);
-                    if(mysqli_stmt_fetch($stmt)){
-                        if($pass === $stored_pass){
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["username"] = $user;
+
+    // if no errors, try to log in
+    if(empty($nameErrorMsg) && empty($passErrorMsg)){
+        $checkUserQuery = "SELECT id, username, password FROM users WHERE username = ?";
+        
+        if($userCheck = mysqli_prepare($myDatabaseLink, $checkUserQuery)){
+            // setting up the username parameter
+            mysqli_stmt_bind_param($userCheck, "s", $tempUsername);
+            $tempUsername = $userLoginName;
+
+            // running the query
+            if(mysqli_stmt_execute($userCheck)){
+                // saving the results
+                mysqli_stmt_store_result($userCheck);
+
+                // checking if we found the user
+                if(mysqli_stmt_num_rows($userCheck) == 1){
+                    // getting the user details
+                    mysqli_stmt_bind_result($userCheck, $userID, $userName, $storedPassword);
+                    
+                    if(mysqli_stmt_fetch($userCheck)){
+                        // checking if password matches
+                        if($userLoginPass === $storedPassword){
+                            // setting up the session
+                            $_SESSION["isLoggedIn"] = true;
+                            $_SESSION["userID"] = $userID;
+                            $_SESSION["userName"] = $userName;
                             
-                            // Redirect user to dashboard page
+                            // sending to dashboard
                             header("location: dashboard.php");
                             exit;
                         } else {
-                            $login_err = "Invalid username or password.";
+                            $loginErrorMsg = "Oops! Wrong username or password.";
                         }
                     }
                 } else {
-                    $login_err = "Invalid username or password.";
+                    $loginErrorMsg = "Oops! Wrong username or password.";
                 }
             } else {
-                echo "Something went wrong. Try again.";
+                echo "Something went wrong. Please try again!";
             }
-            mysqli_stmt_close($stmt);
+
+            // cleaning up
+            mysqli_stmt_close($userCheck);
         }
     }
-    mysqli_close($conn);
+    
+    // closing database connection
+    mysqli_close($myDatabaseLink);
 }
 ?>
 
@@ -68,142 +87,93 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Administrator Login - Community Events</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            min-height: 100vh;
-            background: #000;
-        }
-        .login-wrapper {
-            min-height: 90vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-container {
-            max-width: 500px;
-            min-width: 400px;
-            min-height: 450px;
-            margin: auto;
-            padding: 3rem 2.5rem;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .login-header h2 {
-            color:turquoise;
-            margin-bottom: 0.5rem;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .form-control:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        .form-control.is-invalid {
-            border-color: #e74c3c;
-        }
-        .invalid-feedback {
-            color: #e74c3c;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        .btn-primary {
-            background:turquoise;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 5px;
-        }
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Main Navigation -->
     <nav class="navbar">
         <div class="navbar-container">
             <a href="/public/index.php" class="navbar-brand">
-                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
+                <i class="fas fa-calendar-alt"></i> Community Events
             </a>
             <div class="nav-links">
-                <a href="/public/index.php"><i class="fas fa-home"></i> Home</a>
+                <a href="/public/index.php" class="nav-item">
+                    <i class="fas fa-home"></i> Return to Home
+                </a>
             </div>
         </div>
     </nav>
+
+    <!-- Login Form Container -->
     <div class="login-wrapper">
         <div class="login-container">
             <div class="login-header">
-                <h2> Admin Login</h2>
-                <p>Please fill in your credentials to login</p>
+                <h2></i>Login</h2>
+                <p>Enter your credentials to access the admin dashboard</p>
             </div>
+
             <?php 
-            if(!empty($login_err)){
-                echo '<div class="alert alert-danger">' . $login_err . '</div>';
+            if(!empty($loginErrorMsg)){
+                echo '<div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> ' . $loginErrorMsg . '
+                </div>';
             }        
             ?>
-            <form action="login.php" method="POST">
+
+            <!-- Login Form -->
+            <form action="login.php" method="POST" class="login-form">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" required>
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-control <?php echo (!empty($nameErrorMsg)) ? 'is-invalid' : ''; ?>" 
+                           value="<?php echo $userLoginName; ?>" 
+                           placeholder="Enter your username"
+                           required>
+                    <span class="invalid-feedback">
+                        <i></i> <?php echo $nameErrorMsg; ?>
+                    </span>
                 </div>
+
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" required>
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           class="form-control <?php echo (!empty($passErrorMsg)) ? 'is-invalid' : ''; ?>" 
+                           placeholder="Enter your password"
+                           required>
+                    <span class="invalid-feedback">
+                        <i></i> <?php echo $passErrorMsg; ?>
+                    </span>
                 </div>
-                <button type="submit" class="btn">
-                    Login
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
             </form>
+
             <div class="form-footer">
-                <a href="/public/index.php">Back to Home</a>
+                <a href="/public/index.php" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Homepage
+                </a>
             </div>
         </div>
     </div>
+
+    <script>
+        // Add any necessary JavaScript here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear form on page load
+            document.querySelector('.login-form').reset();
+        });
+    </script>
 </body>
 </html> 

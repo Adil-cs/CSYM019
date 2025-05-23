@@ -10,11 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Main navigation menu for site-wide access -->
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.php" class="navbar-brand">
-                <img src="/public/assets/assets_task_01jvj0svqff7gsd86t80gqd2hj_1747582816_img_0.webp" alt="App Logo" style="height:3.5rem;width:auto;vertical-align:middle;margin-right:0.5rem;display:inline-block;"> Community Events
+                <i class="fas fa-calendar-alt"></i> Community Events
             </a>
             <div class="nav-links">
                 <a href="index.php"><i class="fas fa-home"></i> All Events</a>
@@ -26,13 +26,16 @@
         </div>
     </nav>
 
+    <!-- Main content wrapper -->
     <div class="container">
         <header>
             <h1>Help Center</h1>
             <p>Find answers to your questions and get support</p>
         </header>
 
+        <!-- Interactive help content area -->
         <div class="help-content animate__animated animate__fadeIn">
+            <!-- Search functionality for help topics -->
             <div class="search-box">
                 <input type="text" placeholder="Search for help..." class="search-input">
                 <button class="search-button">
@@ -40,7 +43,9 @@
                 </button>
             </div>
 
+            <!-- Organized help sections -->
             <div class="help-sections">
+                <!-- User onboarding section -->
                 <section class="help-section">
                     <h2><i class="fas fa-user-plus"></i> Getting Started</h2>
                     <div class="faq-grid">
@@ -59,6 +64,7 @@
                     </div>
                 </section>
 
+                <!-- Event management guidance -->
                 <section class="help-section">
                     <h2><i class="fas fa-calendar-check"></i> Event Management</h2>
                     <div class="faq-grid">
@@ -77,34 +83,36 @@
                     </div>
                 </section>
 
+                <!-- Account management section -->
                 <section class="help-section">
                     <h2><i class="fas fa-cog"></i> Account Settings</h2>
                     <div class="faq-grid">
                         <div class="faq-item">
-                            <h3>How do I update my profile?</h3>
+                            <h3>How do I update my profile? (Coming Soon)</h3>
                             <p>Go to your account settings to update your profile information, change your password, or manage your notification preferences.</p>
                         </div>
                         <div class="faq-item">
-                            <h3>How do I reset my password?</h3>
+                            <h3>How do I reset my password? (Coming Soon)</h3>
                             <p>Click on "Forgot Password" on the login page. Enter your email address and follow the instructions sent to your inbox.</p>
                         </div>
                         <div class="faq-item">
-                            <h3>How do I delete my account?</h3>
+                            <h3>How do I delete my account? (Coming Soon)</h3>
                             <p>Go to account settings and click on "Delete Account". Note that this action cannot be undone.</p>
                         </div>
                     </div>
                 </section>
             </div>
 
+            <!-- Support contact options -->
             <div class="contact-support">
                 <h2>Still Need Help?</h2>
                 <p>Our support team is here to help you 24/7</p>
                 <div class="contact-methods">
                     <a href="mailto:support@communityevents.com" class="contact-button">
-                        <i class="fas fa-envelope"></i> Email Support
+                        <i class="fas fa-envelope"></i> Email Support (Coming Soon)
                     </a>
                     <a href="tel:+1234567890" class="contact-button">
-                        <i class="fas fa-phone"></i> Call Support
+                        <i class="fas fa-phone"></i> Call Support (Coming Soon)
                     </a>
                     <a href="#" class="contact-button">
                         <i class="fas fa-comments"></i> Live Chat(Coming soon)
@@ -113,159 +121,5 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .help-content {
-            margin-top: 2rem;
-        }
-
-        .search-box {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid var(--primary-light);
-            border-radius: var(--border-radius) 0 0 var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .search-button {
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 0 1.5rem;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .search-button:hover {
-            background: var(--primary-dark);
-        }
-
-        .help-sections {
-            display: grid;
-            gap: 3rem;
-        }
-
-        .help-section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .help-section h2 {
-            color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .help-section h2 i {
-            color: var(--primary-color);
-        }
-
-        .faq-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .faq-item {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--primary-light);
-        }
-
-        .faq-item h3 {
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .faq-item p {
-            color: var(--text-light);
-            line-height: 1.6;
-        }
-
-        .contact-support {
-            text-align: center;
-            margin-top: 4rem;
-            padding: 3rem;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .contact-support h2 {
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-        }
-
-        .contact-support p {
-            color: var(--text-light);
-            margin-bottom: 2rem;
-        }
-
-        .contact-methods {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .contact-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: var(--primary-color);
-            color: var(--white);
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .contact-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .search-box {
-                margin-bottom: 2rem;
-            }
-
-            .help-section {
-                padding: 1.5rem;
-            }
-
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .contact-methods {
-                flex-direction: column;
-            }
-
-            .contact-button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
 </body>
 </html> 

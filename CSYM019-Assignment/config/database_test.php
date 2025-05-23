@@ -1,15 +1,14 @@
-<?php
-$host = 'localhost';
-$dbname = 'community_events_test';
+$host = '127.0.0.1';
+$dbname = 'community_events_test'; // or whatever your test database is called
 $username = 'root';
-$password = '';
+$password = 'root';
+$port = 3307;
 
 try {
-    $conn = new mysqli($host, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
+    $GLOBALS['conn'] = new mysqli($host, $username, $password, $dbname, $port);
+    if ($GLOBALS['conn']->connect_error) {
+        throw new Exception("Connection failed: " . $GLOBALS['conn']->connect_error);
     }
 } catch (Exception $e) {
     die("Database connection failed: " . $e->getMessage());
 }
-?> 

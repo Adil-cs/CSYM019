@@ -1,11 +1,11 @@
 <?php
 require_once "../config/database.php";
 
-// Get upcoming events (today or later)
-$q = "SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC";
-$res = mysqli_query($conn, $q);
-if($res === false) {
-    die("Query error: " . mysqli_error($conn));
+// Fetch future events from the database
+$upcoming_query = "SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC";
+$upcoming_result = mysqli_query($myDatabaseLink, $upcoming_query);
+if($upcoming_result === false) {
+    die("Query error: " . mysqli_error($myDatabaseLink));
 }
 ?>
 
@@ -15,111 +15,12 @@ if($res === false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Events - Community Events</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <style>
-        .event-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 2rem;
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .event-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .event-card:hover .event-image {
-            transform: scale(1.05);
-        }
-
-        .event-content {
-            padding: 1.5rem;
-        }
-
-        .event-title {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .event-card:hover .event-title {
-            color: #3498db;
-        }
-
-        .event-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            color: #7f8c8d;
-        }
-
-        .event-meta i {
-            margin-right: 0.5rem;
-        }
-
-        .event-description {
-            color: #34495e;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .event-category {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #f1f1f1;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            color: #7f8c8d;
-        }
-
-        .no-image {
-            background: #f1f1f1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #7f8c8d;
-            font-size: 2rem;
-            position: relative;
-        }
-
-        .image-error {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 0, 0, 0.1);
-            color: #ff0000;
-            font-size: 0.75rem;
-            padding: 0.25rem;
-            text-align: center;
-        }
-
-        .animate__animated {
-            animation-duration: 1s;
-        }
-
-        @media (max-width: 768px) {
-            .event-image {
-                height: 150px;
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Site-wide navigation menu -->
     <nav class="navbar">
         <div class="navbar-container">
             <a href="index.php" class="navbar-brand">
@@ -135,31 +36,34 @@ if($res === false) {
         </div>
     </nav>
 
+    <!-- Main content wrapper -->
     <div class="container">
+        <!-- Page header with title -->
         <header>
             <h1>Upcoming Events</h1>
             <p>Discover and join upcoming events in your community</p>
         </header>
 
+        <!-- Dynamic events display grid -->
         <div class="events-grid" id="eventsContainer">
-            <?php if(mysqli_num_rows($res) > 0): ?>
-                <?php while($row = mysqli_fetch_assoc($res)): ?>
+            <?php if(mysqli_num_rows($upcoming_result) > 0): ?>
+                <?php while($event = mysqli_fetch_assoc($upcoming_result)): ?>
                     <div class="event-card animate__animated animate__fadeInUp">
-                        <?php if(!empty($row['image_path'])): ?>
-                            <img src="/<?php echo htmlspecialchars($row['image_path']); ?>" alt="<?php echo htmlspecialchars($row['title']); ?>" class="event-image">
+                        <?php if(!empty($event['image_path'])): ?>
+                            <img src="/<?php echo htmlspecialchars($event['image_path']); ?>" alt="<?php echo htmlspecialchars($event['title']); ?>" class="event-image">
                         <?php else: ?>
                             <div class="event-image no-image">
                                 <i class="fas fa-image"></i>
                             </div>
                         <?php endif; ?>
                         <div class="event-content">
-                            <h3 class="event-title"><?php echo htmlspecialchars($row['title']); ?></h3>
+                            <h3 class="event-title"><?php echo htmlspecialchars($event['title']); ?></h3>
                             <div class="event-meta">
-                                <span><i class="fas fa-calendar"></i> <?php echo date('F j, Y', strtotime($row['event_date'])); ?></span>
-                                <span><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($row['location']); ?></span>
+                                <span><i class="fas fa-calendar"></i> <?php echo date('F j, Y', strtotime($event['event_date'])); ?></span>
+                                <span><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($event['location']); ?></span>
                             </div>
-                            <p class="event-description"><?php echo htmlspecialchars($row['description']); ?></p>
-                            <span class="event-category"><?php echo htmlspecialchars($row['category']); ?></span>
+                            <p class="event-description"><?php echo htmlspecialchars($event['description']); ?></p>
+                            <span class="event-category"><?php echo htmlspecialchars($event['category']); ?></span>
                         </div>
                     </div>
                 <?php endwhile; ?>
@@ -173,7 +77,7 @@ if($res === false) {
     </div>
 
     <script>
-        // Animate event cards when they appear
+        // Intersection Observer for scroll animations
         document.addEventListener('DOMContentLoaded', function() {
             const eventCards = document.querySelectorAll('.event-card');
             const observer = new IntersectionObserver((entries) => {
